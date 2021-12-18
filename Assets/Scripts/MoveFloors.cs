@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MoveFloors : MonoBehaviour
 {
-    private float speed = -5.0f;
+    private float speed = 5.0f;
     private Vector3 startPos;
     private float floorWidth;
 
@@ -12,7 +12,7 @@ public class MoveFloors : MonoBehaviour
     void Start()
     {
         startPos = transform.position;
-        floorWidth = GetComponent<BoxCollider>().size.x / 4;
+        floorWidth = GetComponent<BoxCollider>().size.x / 2;
     }
 
     // Update is called once per frame
@@ -20,7 +20,7 @@ public class MoveFloors : MonoBehaviour
     {
         transform.Translate(startPos * speed * Time.deltaTime);
 
-        if(transform.position.x > startPos.x + floorWidth)
+        if(transform.position.x < startPos.x - floorWidth)
         {
             transform.position = startPos;
         }
