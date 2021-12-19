@@ -15,11 +15,15 @@ public class ObjectsController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.Translate(Vector3.right * speed * Time.deltaTime);
-
         if(transform.position.x < -85 || transform.position.y < -50)
         {
             Destroy(gameObject);
         }
     }
+
+    private void FixedUpdate()
+    {
+        transform.Translate(Vector3.right * speed * Time.deltaTime);
+    }
+
 }
