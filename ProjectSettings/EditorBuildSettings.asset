@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Whack-A-Mouse.unity
+    guid: d155a801fa2d9774c9309a09ae7e8a5e
   m_configObjects: {}

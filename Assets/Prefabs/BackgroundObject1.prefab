@@ -112,6 +112,11 @@ MonoBehaviour:
   countdown: 1.5
   addPoints: 0
   subtractLives: -1
+  catSounds:
+  - {fileID: 8300000, guid: 2891e1648a952634e93fd0b70c93eb71, type: 3}
+  - {fileID: 8300000, guid: 487315164126e864d8deab96bcd2ee20, type: 3}
+  - {fileID: 8300000, guid: e4bf4fd8c105e274c8da8f84ff0f1e6d, type: 3}
+  mouseSounds: []
 --- !u!54 &-3874564733187534245
 Rigidbody:
   m_ObjectHideFlags: 0

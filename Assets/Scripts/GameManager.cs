@@ -17,7 +17,11 @@ public class GameManager : MonoBehaviour
     public GameObject restartButton;
     public GameObject[] lifeBar;
     public Camera mainCamera;
-    
+    public AudioClip gameStart;
+    public AudioClip endResults;
+    public GameObject creditsText;
+    public GameObject creditsButton;
+
 
     //Private variables
     private Rigidbody rb;
@@ -26,12 +30,16 @@ public class GameManager : MonoBehaviour
     private bool isActive;
     private int playerLives = 3;
     private float spawnRate = 3f;
-    private int timeLimit = 30;
+    private int timeLimit = 45;
+    private bool isCameraInPlace;
+    private AudioSource audioSource;
+    private bool isGameOver = false;
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        audioSource = GameObject.Find("Arcade").GetComponent<AudioSource>();
         scoreText.transform.position = new Vector3(7.56f, 6.44f, 7f);
         gameOverText.SetActive(false);
         
@@ -41,8 +49,8 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         TimeEnd();
-    }
 
+    }
 
     IEnumerator SpawnGameObjects()
     {
@@ -56,7 +64,15 @@ public class GameManager : MonoBehaviour
             if (isActive)
             {
                 Debug.Log("Spawning prefab...");
-                Instantiate(objects[randomObject], RandomSpawnPosition(), objects[randomObject].transform.rotation);
+                if (objects[randomObject].CompareTag("BadObject"))
+                {
+                    Instantiate(objects[randomObject], RandomSpawnPosition() + new Vector3(0,0.75f), objects[randomObject].transform.rotation);
+                }
+                else
+                {
+                    Instantiate(objects[randomObject], RandomSpawnPosition(), objects[randomObject].transform.rotation);
+                }
+                
             }
         }
 
@@ -73,19 +89,23 @@ public class GameManager : MonoBehaviour
         float spawnPositionX = minValueX + randomSquareX[chooseX];
         float spawnPositionZ = maxValueZ - randomSquareZ[chooseZ];
 
-        Vector3 spawnPosition = new Vector3(spawnPositionX, 5, spawnPositionZ);
+        Vector3 spawnPosition = new Vector3(spawnPositionX, 4.4f, spawnPositionZ);
 
         return spawnPosition;
+
     }
 
     public void StartGame(int difficulty)
     {
         spawnRate /= difficulty;
-        buttons.SetActive(false);
+        buttons.SetActive(false);  //Activates Difficulty Buttons
+        creditsButton.SetActive(false);
+        audioSource.PlayOneShot(gameStart, 0.3f);
         lifeMeter.SetActive(true);
+        restartButton.SetActive(false);
         scoreText.transform.position = new Vector3(7.56f, 6.44f, 6.3f);
-        mainCamera.transform.Rotate(new Vector3(mainCamera.transform.rotation.x, 0f), 65f, Space.Self);
-        if(mainCamera.transform.rotation.x >= 0.60f)
+        RotateCamera(65, true);
+        if (isCameraInPlace)  //Checks if camera is in the correct place
         {
             Debug.Log("Everything's set!");
             isActive = true;
@@ -135,18 +155,35 @@ public class GameManager : MonoBehaviour
 
         if(playerLives == 0)
         {
-            GameOver();
+            StartCoroutine(GameOver());
         }
 
     }
 
-    public void GameOver()
+    IEnumerator GameOver()
     {
+        int count = 0;
+
         isActive = false;
         Debug.Log("Game over!");
-        gameOverText.SetActive(true);
-        restartButton.SetActive(true);
-        mainCamera.transform.Rotate(new Vector3(76f, 0f), -65f);
+        isGameOver = true;
+        while(count != 3)
+        {
+            gameOverText.SetActive(true);
+            yield return new WaitForSeconds(0.5f);
+            gameOverText.SetActive(false);
+            yield return new WaitForSeconds(0.5f);
+            count++;
+        }
+        yield return new WaitForSeconds(3f);
+        RotateCamera(-65f, false);
+        if (!isCameraInPlace)
+        {
+            restartButton.SetActive(true);
+
+            audioSource.PlayOneShot(endResults, 0.3f);
+            creditsButton.SetActive(true);
+        }
 
     }
 
@@ -164,7 +201,7 @@ public class GameManager : MonoBehaviour
     {
         if(isActive && timeLimit == 0)
         {
-            GameOver();
+            StartCoroutine(GameOver());
         }
     }
 
@@ -172,5 +209,35 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+
+    private void RotateCamera(float angle, bool rotatedToPlaceOrBack)
+    {
+        mainCamera.transform.Rotate(new Vector3(mainCamera.transform.rotation.x, 0f), angle, Space.Self);
+        isCameraInPlace = rotatedToPlaceOrBack;
+    }
+
+    public void ShowCredits()
+    {
+        creditsText.SetActive(true);
+        buttons.SetActive(false);
+        restartButton.SetActive(false);
+        creditsButton.SetActive(false);
+    }
+
+    public void HideCredits()
+    {
+        creditsText.SetActive(false);
+        creditsButton.SetActive(true);
+        if (isGameOver)
+        {
+            buttons.SetActive(false);
+            restartButton.SetActive(true);
+        }
+        else
+        {
+            buttons.SetActive(true);
+        }
+    }
+
 
 }

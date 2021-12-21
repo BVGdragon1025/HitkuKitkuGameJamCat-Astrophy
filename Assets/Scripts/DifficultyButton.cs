@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class DifficultyButton : MonoBehaviour
 {
     public int difficulty;
     public GameObject bakedText;
+    public TextMeshPro textAbove;
+
 
     private GameManager gameManager;
     private Button diffButton;
@@ -30,8 +33,8 @@ public class DifficultyButton : MonoBehaviour
     {
         gameManager.StartGame(difficulty);
         bakedText.SetActive(true);
+        textAbove.text = "Chosen difficulty";
     }
-
 
 
 }
